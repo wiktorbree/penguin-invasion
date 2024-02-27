@@ -10,7 +10,7 @@ class PhysicsEntity:
         self.collisions = {'up': False, 'down': False, 'right': False, 'left': False}
 
     def rect(self):
-        # create a rect for entity
+        # create a rect for a entity
         return pygame.Rect(self.pos[0], self.pos[1], self.size[0], self.size[1])
         
     def update(self, movement=(0, 0)):

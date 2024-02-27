@@ -28,7 +28,7 @@ class Game:
 
     def run(self):
         while True:
-            self.display.fill((150,200,255))
+            self.display.fill((150,205,250))
 
             pygame.draw.rect(self.display, (255, 0, 0), self.rect)
 
