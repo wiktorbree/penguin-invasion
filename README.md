@@ -1,7 +1,7 @@
 
 # Penguin Invasion
 
-Penguin Invasion is a Python game made using PyGame-CE library. It's my second game made using pygame.
+Penguin Invasion is a Python game made using PyGame-CE library. It's my second game I'm making using pygame.
 
 ## About Penguin Invasion
 
