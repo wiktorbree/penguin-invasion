@@ -14,6 +14,11 @@ while game_not_done:
 ```
 
 ## Updates
+**Version: 0.0.2**
+- Made entities script for handling entities logic such as player (and enemies in the future)
+- Made utils script that handles utility stuff such as getting images
+- Made assets variable that contains a dictionary with all assets that will be used in the game
+
 **Version: 0.0.1**
 - Made basic setup for pygame games
 - Basic collision test
