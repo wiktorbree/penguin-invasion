@@ -14,6 +14,12 @@ while game_not_done:
 ```
 
 ## Updates
+**Version: 0.0.3**
+- Added tilemap script that handles making tiles
+- Added collisions for entities and tiles
+- Added ability to jump
+- Refined getting rect from entity (using FRect now)
+
 **Version: 0.0.2**
 - Made entities script for handling entities logic such as player (and enemies in the future)
 - Made utils script that handles utility stuff such as getting images
