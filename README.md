@@ -17,9 +17,9 @@ while game_not_done:
 *In the form of a concise list*
 
 **Version: 0.0.4**
-- Added animations to the player
+- Added animations to the Player
 - Added background and moving clouds
-- Made separate class for player that inherits from PhysicsEntity
+- Made separate class for Player that inherits from PhysicsEntity
 
 **Version: 0.0.3**
 - Added tilemap script that handles making tiles
