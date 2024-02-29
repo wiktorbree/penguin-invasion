@@ -1,9 +1,10 @@
 import sys
 import pygame
 
-from scripts.utils import load_image, load_images
-from scripts.entities import PhysicsEntity
+from scripts.utils import load_image, load_images, Animation
+from scripts.entities import PhysicsEntity, Player
 from scripts.tilemap import Tilemap
+from scripts.clouds import Clouds
 
 class Game:
     def __init__(self) -> None:
@@ -24,17 +25,32 @@ class Game:
             'decor': load_images('tiles/decor'),
             'large_decor': load_images('tiles/large_decor'),
             'grass': load_images('tiles/grass'),
-            'player': load_image('entities/player.png')
+            'clouds': load_images('clouds'),
+            'back_trees': load_image('trees.png'),
+            'player': load_image('entities/player.png'),
+            'player/idle': Animation(load_images('entities/player/idle'), img_dur=45),
+            'player/run': Animation(load_images('entities/player/run'), img_dur=4),
+            'player/jump': Animation(load_images('entities/player/jump'), img_dur=5),
         }
 
-        self.player = PhysicsEntity(self, 'player', (50, 50), (17, 16))
+        self.clouds = Clouds(self.assets['clouds'], count=16)
+
+        self.player = Player(self, (50, 50), (17, 16))
         self.rect = pygame.Rect(100, 50, 17, 16)
 
         self.tilemap = Tilemap(self, tile_size=16)
 
     def run(self):
         while True:
-            self.display.fill((150,205,250))
+            self.display.fill((118,206,217))
+
+            self.clouds.update()
+            self.clouds.render(self.display)
+
+            self.display.blit(self.assets['back_trees'], (0, 120))
+            self.display.blit(self.assets['back_trees'], (256, 120))
+            self.display.blit(self.assets['back_trees'], (0, 80))
+            self.display.blit(self.assets['back_trees'], (256, 80))
 
             self.tilemap.render(self.display)
 
