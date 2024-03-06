@@ -15,6 +15,10 @@ while game_not_done:
 
 ## Updates
 *In the form of a concise list*
+**Version: 0.0.5**
+- Added editor to make and edit levels
+- Made some minor changes in tilemap script
+- Now map in game is from JSON file :)
 
 **Version: 0.0.4**
 - Added animations to the Player
