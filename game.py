@@ -30,12 +30,12 @@ class Game:
             'player': load_image('entities/player.png'),
             'player/idle': Animation(load_images('entities/player/idle'), img_dur=45),
             'player/run': Animation(load_images('entities/player/run'), img_dur=4),
-            'player/jump': Animation(load_images('entities/player/jump'), img_dur=5),
+            'player/jump': Animation(load_images('entities/player/jump'), img_dur=4),
         }
 
         self.clouds = Clouds(self.assets['clouds'], count=16)
 
-        self.player = Player(self, (50, 50), (17, 16))
+        self.player = Player(self, (50, 50), (11, 16))
         self.rect = pygame.Rect(100, 50, 17, 16)
 
         self.tilemap = Tilemap(self, tile_size=16)

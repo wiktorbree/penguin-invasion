@@ -45,7 +45,6 @@ class Editor:
     def run(self):
         while True:
             self.display.fill((118,206,217))
-
             self.tilemap.render(self.display)
 
             current_tile_img = self.assets[self.tile_list[self.tile_group]][self.tile_variant].copy()
@@ -54,8 +53,7 @@ class Editor:
             # Mouse control
             mpos = pygame.mouse.get_pos()
             mpos = (mpos[0] / SCALE, mpos[1] / SCALE)
-            tile_pos = (int(mpos[0] // self.tilemap.tile_size), mpos[1] // self.tilemap.tile_size)
-
+            tile_pos = (int(mpos[0] // self.tilemap.tile_size), int(mpos[1] // self.tilemap.tile_size))
             if self.ongrid:
                 self.display.blit(current_tile_img, (tile_pos[0] * self.tilemap.tile_size, tile_pos[1] * self.tilemap.tile_size))
             else:

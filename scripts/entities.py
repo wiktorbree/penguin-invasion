@@ -10,7 +10,7 @@ class PhysicsEntity:
         self.collisions = {'up': False, 'down': False, 'right': False, 'left': False}
 
         self.action = ''
-        self.anim_offset = (-2, -5)
+        self.anim_offset = (-5, -5)
         self.flip = False
         self.set_action('idle')
 
