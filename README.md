@@ -15,7 +15,9 @@ while game_not_done:
 
 ## Updates
 *In the form of a concise list*
+
 **Version: 0.6**
+- Added ability to double jump, before the Player could jump infinitely
 - Did some minor changes
 - Fixed little bugs
 
