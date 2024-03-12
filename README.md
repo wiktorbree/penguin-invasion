@@ -16,6 +16,12 @@ while game_not_done:
 ## Updates
 *In the form of a concise list*
 
+**Version: 0.7**
+- Added class for enemies
+- Made spawners for enemies and player
+- Made function to extract those spawners from tilemap
+- Enemies for now just go in one direction and walk off the edge
+
 **Version: 0.6**
 - Added ability to double jump, before the Player could jump infinitely
 - Did some minor changes

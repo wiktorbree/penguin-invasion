@@ -1,4 +1,5 @@
 import pygame
+import random
 
 class PhysicsEntity:
     def __init__(self, game, entity_type, pos, size) -> None:
@@ -65,8 +66,22 @@ class PhysicsEntity:
         self.animation.update()
     
     def render(self, surf):
-        #surf.blit(self.game.assets['player'], self.rect_pos)
         surf.blit(pygame.transform.flip(self.animation.img(), self.flip, False), (self.rect_pos[0] + self.anim_offset[0], self.rect_pos[1] + self.anim_offset[1]))
+
+class Enemy(PhysicsEntity):
+    def __init__(self, game, pos, size) -> None:
+        super().__init__(game, 'enemy', pos, size)
+        self.walking = 0
+        self.anim_offset = (-4, -4)
+
+    def update(self, tilemap, movement=(0, 0)):
+        if self.walking:
+            movement = (movement[0] - 0.5 if not self.flip else 0.5, movement[1])
+            self.walking = max(0, self.walking - 1)
+        elif random.random() < 0.01:
+            self.walking = random.randint(30, 120)
+
+        super().update(tilemap, movement=movement)
 
 class Player(PhysicsEntity):
     def __init__(self, game, pos, size) -> None:

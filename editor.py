@@ -23,6 +23,7 @@ class Editor:
             'decor': load_images('tiles/decor'),
             'large_decor': load_images('tiles/large_decor'),
             'grass': load_images('tiles/grass'),
+            'spawners': load_images('tiles/spawners'),
         }
 
         self.tilemap = Tilemap(self, tile_size=16)

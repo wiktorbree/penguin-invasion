@@ -2,7 +2,7 @@ import sys
 import pygame
 
 from scripts.utils import load_image, load_images, Animation
-from scripts.entities import PhysicsEntity, Player
+from scripts.entities import PhysicsEntity, Player, Enemy
 from scripts.tilemap import Tilemap
 from scripts.clouds import Clouds
 
@@ -27,6 +27,8 @@ class Game:
             'grass': load_images('tiles/grass'),
             'clouds': load_images('clouds'),
             'back_trees': load_image('trees.png'),
+            'enemy/idle': Animation(load_images('entities/enemy/idle'), img_dur=20),
+            'enemy/run': Animation(load_images('entities/enemy/run'), img_dur=4),
             'player': load_image('entities/player.png'),
             'player/idle': Animation(load_images('entities/player/idle'), img_dur=45),
             'player/run': Animation(load_images('entities/player/run'), img_dur=4),
@@ -40,6 +42,15 @@ class Game:
 
         self.tilemap = Tilemap(self, tile_size=16)
         self.tilemap.load('map.json')
+
+        self.enemies = []
+        for spawner in self.tilemap.extract([('spawners', 0), ('spawners', 1)]):
+            if spawner['variant'] == 0:
+                self.player.rect_pos.x = spawner['pos'][0]
+                self.player.rect_pos.y = spawner['pos'][1]
+            else:
+                self.enemies.append(Enemy(self, spawner['pos'], (11, 16)))
+
 
     def run(self):
         while True:
@@ -60,6 +71,10 @@ class Game:
             if self.player.rect_pos.colliderect(self.rect):
                 pygame.draw.rect(self.display, (0, 255, 0), self.rect)
                 print('Collided')
+
+            for enemy in self.enemies.copy():
+                enemy.update(self.tilemap)
+                enemy.render(self.display)
 
             self.player.update(self.tilemap, (self.movement[1] - self.movement[0], 0))
             self.player.render(self.display)

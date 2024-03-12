@@ -51,6 +51,26 @@ class Tilemap:
         self.tile_size = tile_size
         self.tilemap = {} # this will have physics and pos is in gird
         self.offgrid_tiles=[] # this will not have physics and pos is in pixels
+
+    def extract(self, id_pairs, keep=False):
+        matches = []
+        for tile in self.offgrid_tiles.copy():
+            if (tile['type'], tile['variant']) in id_pairs:
+                matches.append(tile.copy())
+                if not keep:
+                    self.offgrid_tiles.remove(tile)
+        
+        for loc in self.tilemap:
+            tile = self.tilemap[loc]
+            if (tile['type'], tile['variant']) in id_pairs:
+                matches.append(tile.copy())
+                # change the pos for the referenced tile (should be in pixels not in coordinates for tilemap)
+                matches[-1]['pos'] = matches[-1]['pos'].copy()
+                matches[-1]['pos'][0] *= self.tile_size
+                matches[-1]['pos'][1] *= self.tile_size
+                if not keep:
+                    del self.tilemap[loc]
+        return matches
         
 
     def tiles_around(self, pos):
