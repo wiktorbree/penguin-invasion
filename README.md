@@ -21,6 +21,8 @@ while game_not_done:
 - Made spawners for enemies and player
 - Made function to extract those spawners from tilemap
 - Enemies for now just go in one direction and walk off the edge
+- **Quick fix** - *Enemies now won't walk off the edge and also won't walk into a wall*
+
 
 **Version: 0.6**
 - Added ability to double jump, before the Player could jump infinitely
