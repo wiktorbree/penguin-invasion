@@ -16,6 +16,14 @@ while game_not_done:
 ## Updates
 *In the form of a concise list*
 
+**Version: 0.8**
+- Added death for the player
+- Added particles (blood when players die) and script that handles them
+- Added screenshake
+- Added new map loading function, so now there can be multiple levels
+- Fixed levitating player when running
+
+
 **Version: 0.7**
 - Added class for enemies
 - Made spawners for enemies and player
