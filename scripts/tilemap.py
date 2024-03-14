@@ -49,7 +49,7 @@ class Tilemap:
     def __init__(self, game, tile_size=16) -> None:
         self.game = game
         self.tile_size = tile_size
-        self.tilemap = {} # this will have physics and pos is in gird
+        self.tilemap = {} # this will have pos in gird and some of them will have physics
         self.offgrid_tiles=[] # this will not have physics and pos is in pixels
 
     def extract(self, id_pairs, keep=False):
@@ -112,6 +112,17 @@ class Tilemap:
                 # get tile position on x and y and multiply it by tile size to get pixel coordinates 
                 rects.append(pygame.Rect(tile['pos'][0] * self.tile_size, tile['pos'][1] * self.tile_size, self.tile_size, self.tile_size))
         return rects
+    
+    def end_tile(self):
+        # function that handles collisions for tile that ends the level
+        for tile in self.offgrid_tiles:
+            if tile['type'] == 'decor' and tile['variant'] == 3:
+                return pygame.Rect(tile['pos'][0], tile['pos'][1], self.tile_size, self.tile_size)
+        for loc in self.tilemap:
+            tile = self.tilemap[loc]
+            if tile['type'] == 'decor' and tile['variant'] == 3:
+                return pygame.Rect(tile['pos'][0] * self.tile_size, tile['pos'][1] * self.tile_size, self.tile_size, self.tile_size)
+        return pygame.Rect(0, 0, 2, 2)
     
     def autotile(self):
         for loc in self.tilemap:

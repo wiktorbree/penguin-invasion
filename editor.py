@@ -10,7 +10,7 @@ class Editor:
     def __init__(self) -> None:
         pygame.init()
 
-        WIDTH, HEIGHT = 640, 480
+        WIDTH, HEIGHT = 1024, 768
 
         pygame.display.set_caption('LEVEL EDITOR - Penguin Invasion')
 

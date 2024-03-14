@@ -2,6 +2,7 @@ import sys
 import pygame
 import random
 import math
+import os
 
 from scripts.utils import load_image, load_images, Animation
 from scripts.entities import PhysicsEntity, Player, Enemy
@@ -13,12 +14,13 @@ class Game:
     def __init__(self) -> None:
         pygame.init()
 
-        WIDTH, HEIGHT = 640, 480
+        WIDTH, HEIGHT = 1024, 768
 
         pygame.display.set_caption('Penguin Invasion')
 
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
-        self.display = pygame.Surface((WIDTH/2, HEIGHT/2))
+        self.display = pygame.Surface((WIDTH/2, HEIGHT/2), pygame.SRCALPHA)
+        self.display_2 = pygame.Surface((WIDTH/2, HEIGHT/2))
 
         self.clock = pygame.time.Clock()
 
@@ -42,10 +44,12 @@ class Game:
         self.clouds = Clouds(self.assets['clouds'], count=16)
 
         self.player = Player(self, (50, 50), (11, 16))
-        self.rect = pygame.Rect(100, 50, 17, 16)
+        self.rect = pygame.Rect(50, 50, 17, 16)
 
         self.tilemap = Tilemap(self, tile_size=16)
-        self.load_level(0)
+        
+        self.level = 0
+        self.load_level(self.level)
 
         self.screenshake = 0
 
@@ -64,34 +68,63 @@ class Game:
         self.dead = 0
         self.particles = []
         self.collided = 0
+        self.transition = -30
+        self.level_ended = False
+        self.wait_time = 0
 
 
     def run(self):
         while True:
-            self.display.fill((118,206,217))
+            self.display.fill((0, 0, 0, 0))
+            self.display_2.fill((118,206,217))
 
             self.clouds.update()
-            self.clouds.render(self.display)
+            self.clouds.render(self.display_2)
 
-            self.display.blit(self.assets['back_trees'], (0, 120))
-            self.display.blit(self.assets['back_trees'], (256, 120))
-            self.display.blit(self.assets['back_trees'], (0, 80))
-            self.display.blit(self.assets['back_trees'], (256, 80))
+            self.display_2.blit(self.assets['back_trees'], (0, 260))
+            self.display_2.blit(self.assets['back_trees'], (256, 260))
+            self.display_2.blit(self.assets['back_trees'], (0, 220))
+            self.display_2.blit(self.assets['back_trees'], (256, 220))
 
             self.screenshake = max(0, self.screenshake - 1)
 
             if self.dead:
                 self.dead += 1
-                if self.dead > 40:
-                    self.load_level(0)
+                if self.dead >= 10:
+                    self.transition = min(30, self.transition + 1)
+                if self.dead > 50:
+                    self.load_level(self.level)
 
             self.tilemap.render(self.display)
 
             pygame.draw.rect(self.display, (255, 0, 0), self.rect)
 
-            if self.player.rect_pos.colliderect(self.rect):
+            if self.player.rect_pos.colliderect(self.tilemap.end_tile()):
                 pygame.draw.rect(self.display, (0, 255, 0), self.rect)
-                print('Collided')
+                self.level_ended = True
+
+            if self.level_ended:
+                self.wait_time += 1
+            
+            if self.wait_time > 40:
+                self.transition += 1
+                if self.transition > 30:
+                    self.level = min(self.level + 1, len(os.listdir('data/maps')) - 1)
+                    self.load_level(self.level)
+
+            if self.transition < 0:
+                self.transition += 1
+
+            display_mask = pygame.mask.from_surface(self.display)
+            display_sillhouette = display_mask.to_surface(setcolor=(0, 0, 0, 180), unsetcolor=(0, 0, 0, 0))
+            for offset in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+                self.display_2.blit(display_sillhouette, offset)
+
+            for particle in self.particles.copy():
+                kill = particle.update()
+                particle.render(self.display)
+                if kill:
+                    self.particles.remove(particle)
 
             for enemy in self.enemies.copy():
                 enemy.update(self.tilemap)
@@ -99,22 +132,16 @@ class Game:
 
                 # if player collide with enemy, player die
                 if self.player.rect_pos.colliderect(enemy.rect_pos):
-                    self.dead += 1
                     self.collided += 1
 
             if self.collided == 1:
+                self.dead += 1
                 self.screenshake = max(25, self.screenshake)
                 for num in range(30):
                     angle = random.random() * math.pi * 2
-                    speed = random.random() * 4
+                    speed = random.random() * 3
                     self.particles.append(Particle(self, 'particle', self.player.rect_pos.center, velocity=[math.cos(angle + math.pi) * speed * 0.5, math.sin(angle + math.pi) * speed * 0.5], frame=random.randint(0, 7)))
                 self.collided += 1
-
-            for particle in self.particles.copy():
-                kill = particle.update()
-                particle.render(self.display)
-                if kill:
-                    self.particles.remove(particle)
 
             if not self.dead:
                 self.player.update(self.tilemap, (self.movement[1] - self.movement[0], 0))
@@ -124,7 +151,7 @@ class Game:
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
-                if event.type == pygame.KEYDOWN:
+                if event.type == pygame.KEYDOWN and not self.level_ended:
                     if event.key == pygame.K_LEFT:
                         self.movement[0] = True
                     if event.key == pygame.K_RIGHT:
@@ -147,8 +174,16 @@ class Game:
                     if event.key == pygame.K_d:
                         self.movement[1] = False
 
+            if self.transition:
+                transition_surf = pygame.Surface(self.display.get_size())
+                pygame.draw.circle(transition_surf, (255, 255, 255), (self.display.get_width() // 2, self.display.get_height() // 2), (30 - abs(self.transition)) * 10)
+                transition_surf.set_colorkey((255, 255, 255))
+                self.display.blit(transition_surf, (0, 0))
+
+            self.display_2.blit(self.display, (0, 0))
+
             screenshake_offset = (random.random() * self.screenshake / 2, random.random() * self.screenshake - self.screenshake / 2)
-            self.screen.blit(pygame.transform.scale(self.display, self.screen.get_size()), screenshake_offset)
+            self.screen.blit(pygame.transform.scale(self.display_2, self.screen.get_size()), screenshake_offset)
             pygame.display.update()
             self.clock.tick(60)
 Game().run()

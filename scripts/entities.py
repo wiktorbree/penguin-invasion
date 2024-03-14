@@ -82,7 +82,7 @@ class Enemy(PhysicsEntity):
                 if (self.collisions['right'] or self.collisions['left']):
                     self.flip = not self.flip
                 else:
-                    movement = (movement[0] - 0.5 if not self.flip else 0.5, movement[1])    
+                    movement = (movement[0] - 0.35 if not self.flip else 0.35, movement[1])    
             else:
                 self.flip = not self.flip
             self.walking = max(0, self.walking - 1)
@@ -100,7 +100,7 @@ class Player(PhysicsEntity):
     def __init__(self, game, pos, size) -> None:
         super().__init__(game, 'player', pos, size)
         self.air_time = 0
-        self.jumps = 2
+        self.jumps = 1
 
     def update(self, tilemap, movement=(0, 0)):
         super().update(tilemap, movement=movement)
@@ -113,7 +113,7 @@ class Player(PhysicsEntity):
 
         if self.collisions['down']:
             self.air_time = 0
-            self.jumps = 2
+            self.jumps = 1
         
         if self.air_time > 4:
             self.set_action('jump')
@@ -125,6 +125,6 @@ class Player(PhysicsEntity):
     def jump(self):
         if self.jumps:
             self.velocity[1] = -3
-            self.jumps -= 1
+            self.jumps -= 0
             self.air_time = 5
             return True

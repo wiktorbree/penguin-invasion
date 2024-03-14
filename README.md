@@ -16,6 +16,12 @@ while game_not_done:
 ## Updates
 *In the form of a concise list*
 
+**Version: 0.9**
+- Added level ending object (the sign)
+- Added transitions after death and when player complete the level
+- Fixed grass texture
+- Added outline to almost everything (thru code)
+
 **Version: 0.8**
 - Added death for the player
 - Added particles (blood when players die) and script that handles them
