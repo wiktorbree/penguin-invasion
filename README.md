@@ -16,6 +16,13 @@ while game_not_done:
 ## Updates
 *In the form of a concise list*
 
+**Version: 1.0**
+- Added menu
+- Added sounds
+- Added pausing
+- Fixed minor bugs
+- The game is kinda done :)
+
 **Version: 0.9**
 - Added level ending object (the sign)
 - Added transitions after death and when player complete the level

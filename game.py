@@ -9,6 +9,7 @@ from scripts.entities import PhysicsEntity, Player, Enemy
 from scripts.tilemap import Tilemap
 from scripts.clouds import Clouds
 from scripts.particle import Particle
+from scripts.button import Button
 
 class Game:
     def __init__(self) -> None:
@@ -41,10 +42,25 @@ class Game:
             'particle/particle': Animation(load_images('particles/particle'), img_dur=6, loop=False),
         }
 
+        self.sfx = {
+            'jump': pygame.mixer.Sound('data/sfx/jump.wav'),
+            'explosion': pygame.mixer.Sound('data/sfx/explosion.wav'),
+            'ambience': pygame.mixer.Sound('data/sfx/ambience.wav'),
+        }
+
+        self.sfx['ambience'].set_volume(0.3)
+        self.sfx['explosion'].set_volume(0.8)
+        self.sfx['jump'].set_volume(0.5)
+
+        pygame.mixer.music.load('data/music.wav')
+        pygame.mixer.music.set_volume(0.2)
+        pygame.mixer.music.play(-1)
+
         self.clouds = Clouds(self.assets['clouds'], count=16)
 
         self.player = Player(self, (50, 50), (11, 16))
-        self.rect = pygame.Rect(50, 50, 17, 16)
+
+        self.dead_rect = pygame.Rect(-400, 400, 1200, 20)
 
         self.tilemap = Tilemap(self, tile_size=16)
         
@@ -52,6 +68,9 @@ class Game:
         self.load_level(self.level)
 
         self.screenshake = 0
+
+    def get_font(self, size):
+        return pygame.font.Font('data/font.ttf', size)
 
     def load_level(self, lvl_id):
         self.tilemap.load('data/maps/' + str(lvl_id) + '.json')
@@ -71,9 +90,14 @@ class Game:
         self.transition = -30
         self.level_ended = False
         self.wait_time = 0
+        self.out_map = 0
 
 
     def run(self):
+
+        self.sfx['ambience'].play(-1)
+
+
         while True:
             self.display.fill((0, 0, 0, 0))
             self.display_2.fill((118,206,217))
@@ -97,10 +121,13 @@ class Game:
 
             self.tilemap.render(self.display)
 
-            pygame.draw.rect(self.display, (255, 0, 0), self.rect)
+            if self.player.rect_pos.colliderect(self.dead_rect):
+                self.out_map += 1
+
+            if self.out_map == 1:
+                self.dead += 1
 
             if self.player.rect_pos.colliderect(self.tilemap.end_tile()):
-                pygame.draw.rect(self.display, (0, 255, 0), self.rect)
                 self.level_ended = True
 
             if self.level_ended:
@@ -135,6 +162,7 @@ class Game:
                     self.collided += 1
 
             if self.collided == 1:
+                self.sfx['explosion'].play()
                 self.dead += 1
                 self.screenshake = max(25, self.screenshake)
                 for num in range(30):
@@ -163,7 +191,10 @@ class Game:
                     if event.key == pygame.K_d:
                         self.movement[1] = True
                     if event.key == pygame.K_w:
-                        self.player.jump()
+                        if self.player.jump():
+                            self.sfx['jump'].play()
+                    if event.key == pygame.K_ESCAPE:
+                        self.menu()
                 if event.type == pygame.KEYUP:
                     if event.key == pygame.K_LEFT:
                         self.movement[0] = False
@@ -186,4 +217,62 @@ class Game:
             self.screen.blit(pygame.transform.scale(self.display_2, self.screen.get_size()), screenshake_offset)
             pygame.display.update()
             self.clock.tick(60)
-Game().run()
+
+    def menu(self):
+
+        self.sfx['ambience'].stop()
+
+        self.transition = 0
+        switch = 1
+
+        play_button = Button(self.display, self.get_font(11), 'Play', 100, 40, (205, 150), 6)
+        quit_button = Button(self.display, self.get_font(11), 'Quit', 100, 40, (205, 300), 6)
+
+        while True:
+            self.display.fill((0, 0, 0, 0))
+            self.display_2.fill((57, 52, 87))
+
+            if not switch:
+                self.transition += 1
+                if self.transition > 30:
+                    self.transition = - 30
+                    self.run()
+            if self.transition < 0:
+                self.transition += 1
+
+            title = self.get_font(22).render('Penguin Invasion', False, (247, 226, 118))
+
+            self.display.blit(title, (85, 50))
+
+            play_button.render()
+            if play_button.done == True:
+                switch = 0
+
+            quit_button.render()
+            if quit_button.done == True:
+                pygame.quit()
+                sys.exit()
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+            
+            display_mask = pygame.mask.from_surface(self.display)
+            display_sillhouette = display_mask.to_surface(setcolor=(0, 0, 0, 180), unsetcolor=(0, 0, 0, 0))
+            for offset in [(-2, 0), (2, 0), (0, -2), (0, 2)]:
+                self.display_2.blit(display_sillhouette, offset)
+            
+            if self.transition:
+                transition_surf = pygame.Surface(self.display.get_size())
+                pygame.draw.circle(transition_surf, (255, 255, 255), (self.display.get_width() // 2, self.display.get_height() // 2), (30 - abs(self.transition)) * 10)
+                transition_surf.set_colorkey((255, 255, 255))
+                self.display.blit(transition_surf, (0, 0))
+
+            self.display_2.blit(self.display, (0, 0))
+
+            self.screen.blit(pygame.transform.scale(self.display_2, self.screen.get_size()), (0, 0))
+            pygame.display.update()
+            self.clock.tick(60)
+
+Game().menu()

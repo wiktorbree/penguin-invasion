@@ -108,7 +108,7 @@ class Player(PhysicsEntity):
         self.air_time += 1
 
         # if you fall down the player should die so restart the level
-        if self.air_time > 100:
+        if self.air_time > 300:
             self.game.dead += 1
 
         if self.collisions['down']:
