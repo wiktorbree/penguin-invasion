@@ -5,13 +5,17 @@ Penguin Invasion is a Python game made using PyGame-CE library. It's my second g
 
 ## About Penguin Invasion
 
-```python
-game_not_done = True
+Penguin Invasion is a 2D platformer where you play as a chicken trying to avoid blind penguins that have invaded the Grassland, your home. Despite their blindness, these penguins possess a dangerous power: touching them causes an explosion! So, be cautious and navigate carefully. Your mission is to reach the Arctic to save the Frozen Shark, the only creature capable of defeating the penguins. You are the last hope for the animals of the Grassland!
 
-while game_not_done:
-	about_section = 'EMPTY'
-	working = True
-```
+**Game:**
+![Image of the game](screenshots/1.png)
+**Menu:**
+![Image of the game](screenshots/0.png)
+**Simple Level Editor:**
+![Image of the game](screenshots/2.png)
+
+It's my second Pygame game and the first one that's using OOP. This game is based on tutorials from Clear Code, Coding with Russ, DaFluffyPotato, and others. It's still a work in progress, but it's finally playable. I will gradually update it and hopefully make it a playable, fun, short game.
+
 
 ## Updates
 *In the form of a concise list*
