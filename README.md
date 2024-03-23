@@ -20,6 +20,12 @@ It's my second Pygame game and the first one that's using OOP. This game is base
 ## Updates
 *In the form of a concise list*
 
+**Version: 1.1**
+- Added pause menu
+- Added options button for later use
+- Some other minor changes
+
+
 **Version: 1.0**
 - Added menu
 - Added sounds

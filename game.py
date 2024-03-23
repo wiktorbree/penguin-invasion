@@ -194,7 +194,7 @@ class Game:
                         if self.player.jump():
                             self.sfx['jump'].play()
                     if event.key == pygame.K_ESCAPE:
-                        self.menu()
+                        self.pause_menu()
                 if event.type == pygame.KEYUP:
                     if event.key == pygame.K_LEFT:
                         self.movement[0] = False
@@ -222,10 +222,18 @@ class Game:
 
         self.sfx['ambience'].stop()
 
+        self.load_level(self.level)
+
         self.transition = 0
         switch = 1
 
-        play_button = Button(self.display, self.get_font(11), 'Play', 100, 40, (205, 150), 6)
+        if self.level == 0:
+            play_button_text = 'Play'
+        else:
+            play_button_text = 'Continue'
+
+        play_button = Button(self.display, self.get_font(11), play_button_text, 100, 40, (205, 150), 6)
+        option_button = Button(self.display, self.get_font(11), 'Options', 100, 40, (205, 225), 6)
         quit_button = Button(self.display, self.get_font(11), 'Quit', 100, 40, (205, 300), 6)
 
         while True:
@@ -248,10 +256,77 @@ class Game:
             if play_button.done == True:
                 switch = 0
 
+            option_button.render()
+            if option_button.done == True:
+                print('test')
+                option_button.done = False
+
             quit_button.render()
             if quit_button.done == True:
                 pygame.quit()
                 sys.exit()
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+            
+            display_mask = pygame.mask.from_surface(self.display)
+            display_sillhouette = display_mask.to_surface(setcolor=(0, 0, 0, 180), unsetcolor=(0, 0, 0, 0))
+            for offset in [(-2, 0), (2, 0), (0, -2), (0, 2)]:
+                self.display_2.blit(display_sillhouette, offset)
+            
+            if self.transition:
+                transition_surf = pygame.Surface(self.display.get_size())
+                pygame.draw.circle(transition_surf, (255, 255, 255), (self.display.get_width() // 2, self.display.get_height() // 2), (30 - abs(self.transition)) * 10)
+                transition_surf.set_colorkey((255, 255, 255))
+                self.display.blit(transition_surf, (0, 0))
+
+            self.display_2.blit(self.display, (0, 0))
+
+            self.screen.blit(pygame.transform.scale(self.display_2, self.screen.get_size()), (0, 0))
+            pygame.display.update()
+            self.clock.tick(60)
+
+    def pause_menu(self):
+
+        self.sfx['ambience'].stop()
+
+        self.transition = 0
+        switch = 1
+
+        play_button = Button(self.display, self.get_font(11), 'Return', 100, 40, (205, 150), 6)
+        option_button = Button(self.display, self.get_font(11), 'Options', 100, 40, (205, 225), 6)
+        quit_button = Button(self.display, self.get_font(11), 'Menu', 100, 40, (205, 300), 6)
+
+        while True:
+            self.display.fill((0, 0, 0, 0))
+            self.display_2.fill((57, 52, 87))
+
+            if not switch:
+                self.transition += 1
+                if self.transition > 30:
+                    self.transition = - 30
+                    self.run()
+            if self.transition < 0:
+                self.transition += 1
+
+            title = self.get_font(22).render('Paused', False, (247, 226, 118))
+
+            self.display.blit(title, (192, 50))
+
+            play_button.render()
+            if play_button.done == True:
+                switch = 0
+
+            option_button.render()
+            if option_button.done == True:
+                print('test')
+                option_button.done = False
+
+            quit_button.render()
+            if quit_button.done == True:
+                self.menu()
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
