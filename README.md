@@ -24,6 +24,7 @@ It's my second Pygame game and the first one that's using OOP. This game is base
 - Added pause menu
 - Added options button for later use
 - Some other minor changes
+- Made some UI changes (new menu screen layout, background and colors)
 
 
 **Version: 1.0**

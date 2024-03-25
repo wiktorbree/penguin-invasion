@@ -40,6 +40,10 @@ class Game:
             'player/run': Animation(load_images('entities/player/run'), img_dur=4),
             'player/jump': Animation(load_images('entities/player/jump'), img_dur=4),
             'particle/particle': Animation(load_images('particles/particle'), img_dur=6, loop=False),
+            'menu_trees': load_image('menu_screen/0.png'),
+            'menu_water': load_image('menu_screen/1.png'),
+            'menu_grass': load_image('menu_screen/2.png'),
+            'menu_entities': load_image('menu_screen/3.png'),
         }
 
         self.sfx = {
@@ -232,13 +236,17 @@ class Game:
         else:
             play_button_text = 'Continue'
 
-        play_button = Button(self.display, self.get_font(11), play_button_text, 100, 40, (205, 150), 6)
-        option_button = Button(self.display, self.get_font(11), 'Options', 100, 40, (205, 225), 6)
-        quit_button = Button(self.display, self.get_font(11), 'Quit', 100, 40, (205, 300), 6)
+        play_button = Button(self.display, self.get_font(11), play_button_text, 100, 40, (325, 150), 6)
+        option_button = Button(self.display, self.get_font(11), 'Options', 100, 40, (325, 225), 6)
+        quit_button = Button(self.display, self.get_font(11), 'Quit', 100, 40, (325, 300), 6)
 
         while True:
             self.display.fill((0, 0, 0, 0))
-            self.display_2.fill((57, 52, 87))
+            self.display_2.fill((118,206,217))
+            self.display_2.blit(self.assets['menu_trees'], (0, 0))
+            self.display_2.blit(self.assets['menu_water'], (0, 0))
+            self.display.blit(self.assets['menu_grass'], (0, 0))
+            
 
             if not switch:
                 self.transition += 1
@@ -248,7 +256,7 @@ class Game:
             if self.transition < 0:
                 self.transition += 1
 
-            title = self.get_font(22).render('Penguin Invasion', False, (247, 226, 118))
+            title = self.get_font(22).render('Penguin Invasion', False, (255, 255, 255))
 
             self.display.blit(title, (85, 50))
 
@@ -275,6 +283,8 @@ class Game:
             display_sillhouette = display_mask.to_surface(setcolor=(0, 0, 0, 180), unsetcolor=(0, 0, 0, 0))
             for offset in [(-2, 0), (2, 0), (0, -2), (0, 2)]:
                 self.display_2.blit(display_sillhouette, offset)
+
+            self.display.blit(self.assets['menu_entities'], (0, 0))
             
             if self.transition:
                 transition_surf = pygame.Surface(self.display.get_size())
@@ -289,6 +299,8 @@ class Game:
             self.clock.tick(60)
 
     def pause_menu(self):
+
+        self.movement = [False, False]
 
         self.sfx['ambience'].stop()
 
@@ -311,7 +323,7 @@ class Game:
             if self.transition < 0:
                 self.transition += 1
 
-            title = self.get_font(22).render('Paused', False, (247, 226, 118))
+            title = self.get_font(22).render('Paused', False, (255, 255, 255))
 
             self.display.blit(title, (192, 50))
 

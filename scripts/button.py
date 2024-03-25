@@ -12,12 +12,12 @@ class Button:
         self.done = False
 
         self.top_rect = pygame.Rect(pos, (width, height))
-        self.top_color = '#F7E476'
+        self.top_color = '#FFFFFF'
 
         self.bottom_rect = pygame.Rect(pos, (width, elevation))
-        self.bottom_color = '#F99252'
+        self.bottom_color = '#a1acbf'
 
-        self.text_surf = font.render(text, False, '#b0653a')
+        self.text_surf = font.render(text, False, '#393457')
         self.text_rect = self.text_surf.get_rect(center = self.top_rect.center)
 
     def render(self):
@@ -37,7 +37,7 @@ class Button:
         mpos = pygame.mouse.get_pos()
         mpos = (mpos[0] / SCALE, mpos[1] / SCALE)
         if self.top_rect.collidepoint(mpos):
-            self.top_color = '#f7d476'
+            self.top_color = '#c8e0e0'
             if pygame.mouse.get_pressed()[0]:
                 self.dynamic_elevation = 0
                 self.pressed = True
@@ -48,4 +48,4 @@ class Button:
                     self.pressed = False
         else:
             self.dynamic_elevation = self.elevation
-            self.top_color = '#F7E476'
+            self.top_color = '#FFFFFF'
