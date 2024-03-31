@@ -38,7 +38,7 @@ class Tile:
     def __json__(self):
         return self.tile_dict
 
-# Implementing JSON encoder for custom objects
+# implementing JSON encoder for custom objects
 class CustomEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, Tile):
