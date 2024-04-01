@@ -4,7 +4,7 @@ import random
 import math
 import os
 
-from scripts.utils import load_image, load_images, Animation
+from scripts.utils import load_image, load_images, Animation, Text
 from scripts.entities import PhysicsEntity, Player, Enemy
 from scripts.tilemap import Tilemap
 from scripts.clouds import Clouds
@@ -52,12 +52,17 @@ class Game:
             'ambience': pygame.mixer.Sound('data/sfx/ambience.wav'),
         }
 
-        self.sfx['ambience'].set_volume(0.3)
-        self.sfx['explosion'].set_volume(0.8)
-        self.sfx['jump'].set_volume(0.5)
+        self.vol_music = 0.9
+        self.vol_ambience = 0.3
+        self.vol_explosion = 0.8
+        self.vol_jump = 0.5
+
+        self.sfx['ambience'].set_volume(self.vol_ambience)
+        self.sfx['explosion'].set_volume(self.vol_explosion)
+        self.sfx['jump'].set_volume(self.vol_jump)
 
         pygame.mixer.music.load('data/music.wav')
-        pygame.mixer.music.set_volume(0.2)
+        pygame.mixer.music.set_volume(self.vol_music)
         pygame.mixer.music.play(-1)
 
         self.clouds = Clouds(self.assets['clouds'], count=16)
@@ -72,6 +77,8 @@ class Game:
         self.load_level(self.level)
 
         self.screenshake = 0
+
+        self.last_state = 'menu'
 
     def get_font(self, size):
         return pygame.font.Font('data/font.ttf', size)
@@ -189,7 +196,8 @@ class Game:
                     if event.key == pygame.K_RIGHT:
                         self.movement[1] = True
                     if event.key == pygame.K_UP:
-                        self.player.velocity[1] = -3
+                        if self.player.jump():
+                            self.sfx['jump'].play()
                     if event.key == pygame.K_a:
                         self.movement[0] = True
                     if event.key == pygame.K_d:
@@ -256,9 +264,7 @@ class Game:
             if self.transition < 0:
                 self.transition += 1
 
-            title = self.get_font(22).render('Penguin Invasion', False, (255, 255, 255))
-
-            self.display.blit(title, (85, 50))
+            Text(self.display, 'Penguin Invasion', self.get_font(22), (85, 50)).render()
 
             play_button.render()
             if play_button.done == True:
@@ -266,7 +272,8 @@ class Game:
 
             option_button.render()
             if option_button.done == True:
-                print('test')
+                self.last_state = 'menu'
+                self.option_menu()
                 option_button.done = False
 
             quit_button.render()
@@ -323,9 +330,7 @@ class Game:
             if self.transition < 0:
                 self.transition += 1
 
-            title = self.get_font(22).render('Paused', False, (255, 255, 255))
-
-            self.display.blit(title, (192, 50))
+            Text(self.display, 'Paused', self.get_font(22), (192, 50)).render()
 
             play_button.render()
             if play_button.done == True:
@@ -333,12 +338,85 @@ class Game:
 
             option_button.render()
             if option_button.done == True:
-                print('test')
+                self.last_state = 'pause'
+                self.option_menu()
                 option_button.done = False
 
             quit_button.render()
             if quit_button.done == True:
                 self.menu()
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+            
+            display_mask = pygame.mask.from_surface(self.display)
+            display_sillhouette = display_mask.to_surface(setcolor=(0, 0, 0, 180), unsetcolor=(0, 0, 0, 0))
+            for offset in [(-2, 0), (2, 0), (0, -2), (0, 2)]:
+                self.display_2.blit(display_sillhouette, offset)
+            
+            if self.transition:
+                transition_surf = pygame.Surface(self.display.get_size())
+                pygame.draw.circle(transition_surf, (255, 255, 255), (self.display.get_width() // 2, self.display.get_height() // 2), (30 - abs(self.transition)) * 10)
+                transition_surf.set_colorkey((255, 255, 255))
+                self.display.blit(transition_surf, (0, 0))
+
+            self.display_2.blit(self.display, (0, 0))
+
+            self.screen.blit(pygame.transform.scale(self.display_2, self.screen.get_size()), (0, 0))
+            pygame.display.update()
+            self.clock.tick(60)
+
+    def option_menu(self):
+
+        self.movement = [False, False]
+
+        self.sfx['ambience'].stop()
+
+        self.transition = 0
+        switch = 1
+
+        back_button = Button(self.display, self.get_font(11), 'Back', 100, 40, (205, 300), 6)
+        sound_button_l = Button(self.display, self.get_font(16), '<', 30, 25, (200, 125), 6)
+        sound_button_r = Button(self.display, self.get_font(16), '>', 30, 25, (415, 125), 6)
+
+        test = 'explosion'
+
+        while True:
+            self.display.fill((0, 0, 0, 0))
+            self.display_2.fill((57, 52, 87))
+
+            if not switch:
+                self.transition += 1
+                if self.transition > 30:
+                    self.transition = - 30
+                    self.run()
+            if self.transition < 0:
+                self.transition += 1
+
+            Text(self.display, 'Options', self.get_font(22), (180, 50)).render()
+
+            Text(self.display, 'Sound:', self.get_font(16), (50, 125)).render()
+            Text(self.display, 'Volume:', self.get_font(16), (50, 215)).render() 
+
+            Text(self.display, test, self.get_font(16), (250, 125)).render()
+
+            sound_button_l.render()
+            if sound_button_l.done == True:
+                test = 'music'
+                sound_button_l.done = False
+            sound_button_r.render()
+            if sound_button_r.done == True:
+                test = 'explosion'
+                sound_button_r.done = False
+
+            back_button.render()
+            if back_button.done == True:
+                if self.last_state == 'menu':
+                    self.menu()
+                elif self.last_state == 'pause':
+                    self.pause_menu()
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:

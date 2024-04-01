@@ -39,3 +39,14 @@ class Animation:
         # return image that should be on that frame
         return self.images[int(self.frame / self.img_duration)]
     
+class Text:
+    def __init__(self, display, text, font, pos) -> None:
+        self.game = display
+        self.text = text
+        self.font = font
+        self.pos = list(pos)
+
+    def render(self):
+        text = self.font.render(self.text, False, (255, 255, 255))
+
+        self.game.blit(text, self.pos)
