@@ -380,8 +380,12 @@ class Game:
         back_button = Button(self.display, self.get_font(11), 'Back', 100, 40, (205, 300), 6)
         sound_button_l = Button(self.display, self.get_font(16), '<', 30, 25, (200, 125), 6)
         sound_button_r = Button(self.display, self.get_font(16), '>', 30, 25, (415, 125), 6)
+        volume_buttom_l = Button(self.display, self.get_font(16), '<', 30, 25, (200, 215), 6)
+        volume_buttom_r = Button(self.display, self.get_font(16), '>', 30, 25, (415, 215), 6)
 
-        test = 'explosion'
+        sounds = list(self.sfx.copy())
+        sounds.append('music')
+        sound = 1
 
         while True:
             self.display.fill((0, 0, 0, 0))
@@ -400,16 +404,47 @@ class Game:
             Text(self.display, 'Sound:', self.get_font(16), (50, 125)).render()
             Text(self.display, 'Volume:', self.get_font(16), (50, 215)).render() 
 
-            Text(self.display, test, self.get_font(16), (250, 125)).render()
+            Text(self.display, sounds[sound], self.get_font(16), (250, 125)).render()
 
             sound_button_l.render()
             if sound_button_l.done == True:
-                test = 'music'
+                sound = (sound - 1) % len(sounds)
                 sound_button_l.done = False
             sound_button_r.render()
             if sound_button_r.done == True:
-                test = 'explosion'
+                sound = (sound + 1) % len(sounds)
                 sound_button_r.done = False
+
+            volume_buttom_l.render()
+            volume_buttom_r.render()
+            if sounds[sound] in self.sfx or sounds[sound] == 'music':
+                current_vol = getattr(self, f'vol_{sounds[sound]}', None)
+                if current_vol is not None:
+                    Text(self.display, f'{round(current_vol * 100)}', self.get_font(16), (300, 215)).render()
+                    if volume_buttom_l.done == True:
+                        current_vol -= 0.1
+                        if current_vol < 0:
+                            current_vol = 0.0
+                        setattr(self, f'vol_{sounds[sound]}', round(current_vol,2))
+                        if sounds[sound] == 'music':
+                            pygame.mixer.music.set_volume(current_vol)
+                        else:
+                            self.sfx[sounds[sound]].set_volume(current_vol)
+                        volume_buttom_l.done = False
+
+                    if volume_buttom_r.done == True:
+                        current_vol += 0.1
+                        if current_vol > 1:
+                            current_vol = 1.0
+                        setattr(self, f'vol_{sounds[sound]}', round(current_vol, 2))
+                        if sounds[sound] == 'music':
+                            pygame.mixer.music.set_volume(current_vol)
+                        else:
+                            self.sfx[sounds[sound]].set_volume(current_vol)
+                        volume_buttom_r.done = False
+
+
+            
 
             back_button.render()
             if back_button.done == True:

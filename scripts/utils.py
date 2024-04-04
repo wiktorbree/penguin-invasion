@@ -14,6 +14,7 @@ def load_images(path):
         images.append(load_image(path + '/' + img_name))
     return images
 
+
 class Animation:
     def __init__(self, images, img_dur=5, loop=True) -> None:
         self.images = images

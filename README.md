@@ -20,6 +20,10 @@ It's my second Pygame game and the first one that's using OOP. This game is base
 ## Updates
 *In the form of a concise list*
 
+**Version: 1.2**
+- Made option menu
+- Player is now able to change volume of every sound in the game
+
 **Version: 1.1.2**
 - Started working on option menu
 - Updated few things related to text display
