@@ -52,7 +52,7 @@ class Game:
             'ambience': pygame.mixer.Sound('data/sfx/ambience.wav'),
         }
 
-        self.vol_music = 0.9
+        self.vol_music = 0.4
         self.vol_ambience = 0.3
         self.vol_explosion = 0.8
         self.vol_jump = 0.5
@@ -68,8 +68,6 @@ class Game:
         self.clouds = Clouds(self.assets['clouds'], count=16)
 
         self.player = Player(self, (50, 50), (11, 16))
-
-        self.dead_rect = pygame.Rect(-400, 400, 1200, 20)
 
         self.tilemap = Tilemap(self, tile_size=16)
         
@@ -101,7 +99,7 @@ class Game:
         self.transition = -30
         self.level_ended = False
         self.wait_time = 0
-        self.out_map = 0
+        self.scroll = [0, 0]
 
 
     def run(self):
@@ -113,8 +111,12 @@ class Game:
             self.display.fill((0, 0, 0, 0))
             self.display_2.fill((118,206,217))
 
+            self.scroll[0] += (self.player.rect_pos.centerx - self.display.get_width() / 2 - self.scroll[0]) / 30
+            self.scroll[1] += (self.player.rect_pos.centery - self.display.get_height() / 2 - self.scroll[1]) / 90
+            render_scroll = (int(self.scroll[0]), int(self.scroll[1]))
+
             self.clouds.update()
-            self.clouds.render(self.display_2)
+            self.clouds.render(self.display_2, offset=render_scroll)
 
             self.display_2.blit(self.assets['back_trees'], (0, 260))
             self.display_2.blit(self.assets['back_trees'], (256, 260))
@@ -130,13 +132,7 @@ class Game:
                 if self.dead > 50:
                     self.load_level(self.level)
 
-            self.tilemap.render(self.display)
-
-            if self.player.rect_pos.colliderect(self.dead_rect):
-                self.out_map += 1
-
-            if self.out_map == 1:
-                self.dead += 1
+            self.tilemap.render(self.display, offset=render_scroll)
 
             if self.player.rect_pos.colliderect(self.tilemap.end_tile()):
                 self.level_ended = True
@@ -160,13 +156,13 @@ class Game:
 
             for particle in self.particles.copy():
                 kill = particle.update()
-                particle.render(self.display)
+                particle.render(self.display, offset=render_scroll)
                 if kill:
                     self.particles.remove(particle)
 
             for enemy in self.enemies.copy():
                 enemy.update(self.tilemap)
-                enemy.render(self.display)
+                enemy.render(self.display, offset=render_scroll)
 
                 # if player collide with enemy, player die
                 if self.player.rect_pos.colliderect(enemy.rect_pos):
@@ -184,7 +180,7 @@ class Game:
 
             if not self.dead:
                 self.player.update(self.tilemap, (self.movement[1] - self.movement[0], 0))
-                self.player.render(self.display)
+                self.player.render(self.display, offset=render_scroll)
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:

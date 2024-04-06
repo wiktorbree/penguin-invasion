@@ -24,6 +24,9 @@ It's my second Pygame game and the first one that's using OOP. This game is base
 ## Updates
 *In the form of a concise list*
 
+**Version: 1.3**
+- Added camera movement, I think it will suit the gameplay better
+
 **Version: 1.2**
 - Made option menu
 - Player is now able to change volume of every sound in the game

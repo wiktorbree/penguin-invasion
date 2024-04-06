@@ -65,8 +65,8 @@ class PhysicsEntity:
 
         self.animation.update()
     
-    def render(self, surf):
-        surf.blit(pygame.transform.flip(self.animation.img(), self.flip, False), (self.rect_pos[0] + self.anim_offset[0], self.rect_pos[1] + self.anim_offset[1]))
+    def render(self, surf, offset=(0, 0)):
+        surf.blit(pygame.transform.flip(self.animation.img(), self.flip, False), (self.rect_pos[0] - offset[0] + self.anim_offset[0], self.rect_pos[1] - offset[1] + self.anim_offset[1]))
 
 class Enemy(PhysicsEntity):
     def __init__(self, game, pos, size) -> None:
@@ -95,6 +95,9 @@ class Enemy(PhysicsEntity):
             self.set_action('run')
         else:
             self.set_action('idle')
+    
+    def render(self, surf, offset=(0, 0)):
+        super().render(surf, offset=offset)
 
 class Player(PhysicsEntity):
     def __init__(self, game, pos, size) -> None:
@@ -108,7 +111,7 @@ class Player(PhysicsEntity):
         self.air_time += 1
 
         # if you fall down the player should die so restart the level
-        if self.air_time > 300:
+        if self.air_time > 200:
             self.game.dead += 1
 
         if self.collisions['down']:
@@ -121,6 +124,9 @@ class Player(PhysicsEntity):
             self.set_action('run')
         else:
             self.set_action('idle')
+
+    def render(self, surf, offset=(0, 0)):
+        super().render(surf, offset=offset)
     
     def jump(self):
         if self.jumps:
