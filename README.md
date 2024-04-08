@@ -24,6 +24,10 @@ It's my second Pygame game and the first one that's using OOP. This game is base
 ## Updates
 *In the form of a concise list*
 
+**Version: 1.3.2**
+- Added camera movement to the editor
+- Added player spawn point indicator to the editor
+
 **Version: 1.3**
 - Added camera movement, I think it will suit the gameplay better
 

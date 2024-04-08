@@ -38,6 +38,9 @@ class Editor:
 
         self.ongrid = True
 
+        self.movement = [False, False, False, False]
+        self.scroll = [0, 0]
+
         try:
             self.tilemap.load('map.json')
         except FileNotFoundError:
@@ -46,7 +49,14 @@ class Editor:
     def run(self):
         while True:
             self.display.fill((118,206,217))
-            self.tilemap.render(self.display)
+
+            self.scroll[0] += (self.movement[1] - self.movement[0]) * 2
+            self.scroll[1] += (self.movement[3] - self.movement[2]) * 2
+
+            render_scroll = (int(self.scroll[0]), int(self.scroll[1]))
+            pygame.draw.rect(self.display, (255,255,255), (240 - render_scroll[0], 176 - render_scroll[1], 32, 32))
+
+            self.tilemap.render(self.display, offset=render_scroll)
 
             current_tile_img = self.assets[self.tile_list[self.tile_group]][self.tile_variant].copy()
             current_tile_img.set_alpha(150)
@@ -54,9 +64,9 @@ class Editor:
             # Mouse control
             mpos = pygame.mouse.get_pos()
             mpos = (mpos[0] / SCALE, mpos[1] / SCALE)
-            tile_pos = (int(mpos[0] // self.tilemap.tile_size), int(mpos[1] // self.tilemap.tile_size))
+            tile_pos = (int((mpos[0] + self.scroll[0]) // self.tilemap.tile_size), int((mpos[1] + self.scroll[1]) // self.tilemap.tile_size))
             if self.ongrid:
-                self.display.blit(current_tile_img, (tile_pos[0] * self.tilemap.tile_size, tile_pos[1] * self.tilemap.tile_size))
+                self.display.blit(current_tile_img, (tile_pos[0] * self.tilemap.tile_size - self.scroll[0], tile_pos[1] * self.tilemap.tile_size - self.scroll[1]))
             else:
                 self.display.blit(current_tile_img, mpos)
 
@@ -68,7 +78,7 @@ class Editor:
                     del self.tilemap.tilemap[tile_loc]
                 for tile in self.tilemap.offgrid_tiles.copy():
                     tile_img = self.assets[tile['type']][tile['variant']]
-                    tile_rect = pygame.Rect(tile['pos'][0], tile['pos'][1], tile_img.get_width(), tile_img.get_height())
+                    tile_rect = pygame.Rect(tile['pos'][0] - self.scroll[0], tile['pos'][1] - self.scroll[1], tile_img.get_width(), tile_img.get_height())
                     if tile_rect.collidepoint(mpos):
                         self.tilemap.offgrid_tiles.remove(tile)
 
@@ -83,7 +93,7 @@ class Editor:
                     if event.button == 1:
                         self.left_click = True
                         if not self.ongrid:
-                            self.tilemap.offgrid_tiles.append(Tile(self.tile_list[self.tile_group], self.tile_variant, mpos))
+                            self.tilemap.offgrid_tiles.append(Tile(self.tile_list[self.tile_group], self.tile_variant, (mpos[0] + self.scroll[0], mpos[1] + self.scroll[1])))
                     if event.button == 3:
                         self.right_click = True
                     if self.shift:
@@ -113,9 +123,25 @@ class Editor:
                         self.tilemap.save('map.json')
                     if event.key == pygame.K_t:
                         self.tilemap.autotile()
+                    if event.key == pygame.K_a:
+                        self.movement[0] = True
+                    if event.key == pygame.K_d:
+                        self.movement[1] = True
+                    if event.key == pygame.K_w:
+                        self.movement[2] = True
+                    if event.key == pygame.K_s:
+                        self.movement[3] = True
                 if event.type == pygame.KEYUP:
                     if event.key == pygame.K_LSHIFT:
                         self.shift = False
+                    if event.key == pygame.K_a:
+                        self.movement[0] = False
+                    if event.key == pygame.K_d:
+                        self.movement[1] = False
+                    if event.key == pygame.K_w:
+                        self.movement[2] = False
+                    if event.key == pygame.K_s:
+                        self.movement[3] = False
             
             self.screen.blit(pygame.transform.scale(self.display, self.screen.get_size()), (0, 0))
             pygame.display.update()
