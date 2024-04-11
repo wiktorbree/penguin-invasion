@@ -46,6 +46,8 @@ class Game:
             'menu_entities': load_image('menu_screen/3.png'),
         }
 
+        self.trees_width = self.assets['back_trees'].get_width()
+
         self.sfx = {
             'jump': pygame.mixer.Sound('data/sfx/jump.wav'),
             'explosion': pygame.mixer.Sound('data/sfx/explosion.wav'),
@@ -114,14 +116,18 @@ class Game:
             self.scroll[0] += (self.player.rect_pos.centerx - self.display.get_width() / 2 - self.scroll[0]) / 30
             self.scroll[1] += (self.player.rect_pos.centery - self.display.get_height() / 2 - self.scroll[1]) / 90
             render_scroll = (int(self.scroll[0]), int(self.scroll[1]))
+            print(render_scroll)
+
+            if int(self.scroll[1]) >= 18:
+                self.scroll[1] = 18
+
+            speed = 0.3
+            for x in range(-10, 200):
+                self.display_2.blit(self.assets['back_trees'], ((x * self.trees_width) - render_scroll[0] * speed, 270 - render_scroll[1] * speed))
+                self.display_2.blit(self.assets['back_trees'], ((x * self.trees_width) - render_scroll[0] * speed, 220 - render_scroll[1] * speed))
 
             self.clouds.update()
             self.clouds.render(self.display_2, offset=render_scroll)
-
-            self.display_2.blit(self.assets['back_trees'], (0, 260))
-            self.display_2.blit(self.assets['back_trees'], (256, 260))
-            self.display_2.blit(self.assets['back_trees'], (0, 220))
-            self.display_2.blit(self.assets['back_trees'], (256, 220))
 
             self.screenshake = max(0, self.screenshake - 1)
 
