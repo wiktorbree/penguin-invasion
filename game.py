@@ -53,16 +53,19 @@ class Game:
             'jump': pygame.mixer.Sound('data/sfx/jump.wav'),
             'explosion': pygame.mixer.Sound('data/sfx/explosion.wav'),
             'ambience': pygame.mixer.Sound('data/sfx/ambience.wav'),
+            'gem': pygame.mixer.Sound('data/sfx/gem.wav'),
         }
 
         self.vol_music = 0.4
         self.vol_ambience = 0.3
         self.vol_explosion = 0.8
         self.vol_jump = 0.5
+        self.vol_gem = 0.5
 
         self.sfx['ambience'].set_volume(self.vol_ambience)
         self.sfx['explosion'].set_volume(self.vol_explosion)
         self.sfx['jump'].set_volume(self.vol_jump)
+        self.sfx['gem'].set_volume(self.vol_gem)
 
         pygame.mixer.music.load('data/music.wav')
         pygame.mixer.music.set_volume(self.vol_music)

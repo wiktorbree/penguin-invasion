@@ -79,7 +79,7 @@ class Gem(PhysicsEntity):
         self.set_action('idle')
 
         if self.rect_pos.colliderect(self.game.player.rect_pos):
-            # here will be sfx later
+            self.game.sfx['gem'].play()
             return True
 
     def render(self, surf, offset=(0, 0)):

@@ -29,6 +29,7 @@ It's my second Pygame game and the first one that's using OOP. This game is base
 - Player now have to pick up all gems before going to the next level
 - Changed editor file path
 - Added camera boundaries (left and down only)
+- Added gem sound
 
 
 **Version: 1.3.3**
