@@ -5,7 +5,7 @@ import math
 import os
 
 from scripts.utils import load_image, load_images, Animation, Text
-from scripts.entities import PhysicsEntity, Player, Enemy
+from scripts.entities import PhysicsEntity, Player, Enemy, Gem
 from scripts.tilemap import Tilemap
 from scripts.clouds import Clouds
 from scripts.particle import Particle
@@ -44,6 +44,7 @@ class Game:
             'menu_water': load_image('menu_screen/1.png'),
             'menu_grass': load_image('menu_screen/2.png'),
             'menu_entities': load_image('menu_screen/3.png'),
+            'gem/idle': Animation(load_images('entities/gem/idle'), img_dur=5),
         }
 
         self.trees_width = self.assets['back_trees'].get_width()
@@ -87,13 +88,17 @@ class Game:
         self.tilemap.load('data/maps/' + str(lvl_id) + '.json')
 
         self.enemies = []
-        for spawner in self.tilemap.extract([('spawners', 0), ('spawners', 1)]):
+        self.gems = []
+        for spawner in self.tilemap.extract([('spawners', 0), ('spawners', 1), ('spawners', 2)]):
             if spawner['variant'] == 0:
                 self.player.rect_pos.x = spawner['pos'][0]
                 self.player.rect_pos.y = spawner['pos'][1]
                 self.player.air_time = 0
+            elif spawner['variant'] == 2:
+                self.gems.append(Gem(self, spawner['pos'], (16, 16)))
             else:
                 self.enemies.append(Enemy(self, spawner['pos'], (11, 16)))
+
         
         self.dead = 0
         self.particles = []
@@ -102,6 +107,8 @@ class Game:
         self.level_ended = False
         self.wait_time = 0
         self.scroll = [0, 0]
+        self.score = 0
+        self.max_score = len(self.gems)
 
 
     def run(self):
@@ -110,16 +117,21 @@ class Game:
 
 
         while True:
+            #print(f'{self.score} / {self.max_score}')
             self.display.fill((0, 0, 0, 0))
             self.display_2.fill((118,206,217))
 
             self.scroll[0] += (self.player.rect_pos.centerx - self.display.get_width() / 2 - self.scroll[0]) / 30
             self.scroll[1] += (self.player.rect_pos.centery - self.display.get_height() / 2 - self.scroll[1]) / 90
             render_scroll = (int(self.scroll[0]), int(self.scroll[1]))
-            print(render_scroll)
+
+            print(render_scroll[0])
 
             if int(self.scroll[1]) >= 18:
                 self.scroll[1] = 18
+
+            if int(self.scroll[0]) <= -100:
+                self.scroll[0] = -100
 
             speed = 0.3
             for x in range(-10, 200):
@@ -140,7 +152,7 @@ class Game:
 
             self.tilemap.render(self.display, offset=render_scroll)
 
-            if self.player.rect_pos.colliderect(self.tilemap.end_tile()):
+            if (self.score == self.max_score) and self.player.rect_pos.colliderect(self.tilemap.end_tile()):
                 self.level_ended = True
 
             if self.level_ended:
@@ -154,6 +166,13 @@ class Game:
 
             if self.transition < 0:
                 self.transition += 1
+
+            for gem in self.gems.copy():
+                kill = gem.update(self.tilemap)
+                gem.render(self.display, offset=render_scroll)
+                if kill:
+                    self.score += 1
+                    self.gems.remove(gem)
 
             display_mask = pygame.mask.from_surface(self.display)
             display_sillhouette = display_mask.to_surface(setcolor=(0, 0, 0, 180), unsetcolor=(0, 0, 0, 0))

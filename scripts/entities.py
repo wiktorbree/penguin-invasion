@@ -68,6 +68,23 @@ class PhysicsEntity:
     def render(self, surf, offset=(0, 0)):
         surf.blit(pygame.transform.flip(self.animation.img(), self.flip, False), (self.rect_pos[0] - offset[0] + self.anim_offset[0], self.rect_pos[1] - offset[1] + self.anim_offset[1]))
 
+class Gem(PhysicsEntity):
+    def __init__(self, game, pos, size) -> None:
+        super().__init__(game, 'gem', pos, size)
+        self.anim_offset = (0, 0)
+        
+    def update(self, tilemap, movement=(0, 0)):
+        super().update(tilemap, movement)
+
+        self.set_action('idle')
+
+        if self.rect_pos.colliderect(self.game.player.rect_pos):
+            # here will be sfx later
+            return True
+
+    def render(self, surf, offset=(0, 0)):
+        super().render(surf, offset=offset)
+
 class Enemy(PhysicsEntity):
     def __init__(self, game, pos, size) -> None:
         super().__init__(game, 'enemy', pos, size)
