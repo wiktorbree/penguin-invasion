@@ -20,6 +20,19 @@ Penguin Invasion is a 2D platformer where you play as a chicken trying to avoid 
 
 It's my second Pygame game and the first one that's using OOP. This game is based on tutorials from Clear Code, Coding with Russ, DaFluffyPotato, and others. It's still a work in progress, but it's finally playable. I will gradually update it and hopefully make it a playable, fun, short game.
 
+## How to run the game
+
+**You have two choices:**
+1. Run the game via game.exe file
+
+2. Run the game via **terminal** using `python game.py` command. (You need to have pygame-ce installed)
+
+**Install pygame-ce:**
+1. Open terminal
+2. If you have pygame already installed run `pip uninstall pygame`
+3. Run `pip install pygame-ce`
+4. Done 😁
+
 
 ## Updates
 *In the form of a concise list*
@@ -29,6 +42,7 @@ It's my second Pygame game and the first one that's using OOP. This game is base
 - Made gems counter
 - Changed gems colours
 - Added "ending"
+- Added .exe file to run the game
 
 **Version: 1.4**
 - Added pickable entities (gems)
