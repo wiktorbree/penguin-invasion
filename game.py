@@ -120,7 +120,6 @@ class Game:
 
 
         while True:
-            #print(f'{self.score} / {self.max_score}')
             self.display.fill((0, 0, 0, 0))
             self.display_2.fill((118,206,217))
 
@@ -128,7 +127,7 @@ class Game:
             self.scroll[1] += (self.player.rect_pos.centery - self.display.get_height() / 2 - self.scroll[1]) / 90
             render_scroll = (int(self.scroll[0]), int(self.scroll[1]))
 
-            print(render_scroll[0])
+            Text(self.display, f'Gems:{self.score}/{self.max_score}', self.get_font(8), (10, 10)).render()
 
             if int(self.scroll[1]) >= 18:
                 self.scroll[1] = 18

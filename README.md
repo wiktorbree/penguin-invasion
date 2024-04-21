@@ -24,6 +24,12 @@ It's my second Pygame game and the first one that's using OOP. This game is base
 ## Updates
 *In the form of a concise list*
 
+**Version: 1.5**
+- Made levels
+- Made gems counter
+- Changed gems colours
+- Added "ending"
+
 **Version: 1.4**
 - Added pickable entities (gems)
 - Player now have to pick up all gems before going to the next level
