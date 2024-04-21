@@ -23,7 +23,7 @@ It's my second Pygame game and the first one that's using OOP. This game is base
 ## How to run the game
 
 **You have two choices:**
-1. Run the game via game.exe file
+1. Run the game via game.exe file inside the `windows_version.zip` in release folder
 
 2. Run the game via **terminal** using `python game.py` command. (You need to have pygame-ce installed)
 
